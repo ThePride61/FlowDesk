@@ -1,0 +1,137 @@
+.flowdesk-kanban {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 8px;
+  overflow: hidden;
+}
+
+.flowdesk-toolbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.flowdesk-filter {
+  background: var(--background-secondary);
+  color: var(--text-normal);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
+.flowdesk-new-btn {
+  margin-left: auto;
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border: none;
+  border-radius: 4px;
+  padding: 4px 12px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.flowdesk-columns {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.flowdesk-column {
+  width: 280px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--background-secondary);
+  border-radius: 6px;
+  padding: 8px;
+  min-height: 0;
+}
+
+.flowdesk-column.drag-over {
+  outline: 2px solid var(--interactive-accent);
+}
+
+.column-header {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-muted);
+  padding-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.column-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.flowdesk-card {
+  background: var(--background-primary);
+  border-radius: 4px;
+  padding: 8px 10px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: box-shadow 0.1s;
+}
+
+.flowdesk-card:hover {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.flowdesk-card.priority-urgent { border-left-color: var(--color-red); }
+.flowdesk-card.priority-high   { border-left-color: var(--color-orange); }
+.flowdesk-card.priority-low    { border-left-color: var(--text-muted); }
+
+.card-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-normal);
+  margin-bottom: 4px;
+}
+
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.card-tag {
+  background: var(--background-secondary);
+  color: var(--text-muted);
+  border-radius: 3px;
+  padding: 1px 6px;
+  font-size: 11px;
+}
+
+.card-date {
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+.flowdesk-input,
+.flowdesk-textarea {
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 6px 8px;
+  background: var(--background-secondary);
+  color: var(--text-normal);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  font-size: 14px;
+  display: block;
+}
+
+.flowdesk-textarea {
+  height: 80px;
+  resize: vertical;
+}
