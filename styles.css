@@ -1,9 +1,43 @@
-.flowdesk-kanban {
+.flowdesk-root {
   display: flex;
   flex-direction: column;
   height: 100%;
+  overflow: hidden;
+}
+
+.flowdesk-tab-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--background-modifier-border);
+  padding: 0 8px;
+  flex-shrink: 0;
+}
+
+.flowdesk-tab {
+  padding: 8px 16px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.flowdesk-tab:hover { color: var(--text-normal); }
+.flowdesk-tab.active {
+  color: var(--text-normal);
+  border-bottom-color: var(--interactive-accent);
+  font-weight: 500;
+}
+
+.flowdesk-kanban {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   padding: 8px;
   overflow: hidden;
+  min-height: 0;
 }
 
 .flowdesk-toolbar {
@@ -134,4 +168,132 @@
 .flowdesk-textarea {
   height: 80px;
   resize: vertical;
+}
+
+/* ==================== 导航页 ==================== */
+
+.flowdesk-nav {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 8px 12px;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.flowdesk-nav-toolbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.flowdesk-nav-edit-btn {
+  background: var(--background-secondary);
+  color: var(--text-normal);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  padding: 4px 12px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.flowdesk-nav-edit-btn.active {
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border-color: var(--interactive-accent);
+}
+
+.flowdesk-nav-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.flowdesk-nav-section {
+  background: var(--background-secondary);
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.flowdesk-nav-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.flowdesk-nav-section-header .section-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-normal);
+}
+
+.flowdesk-nav-add-link,
+.flowdesk-nav-del-cat {
+  background: none;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 4px;
+  color: var(--text-muted);
+  width: 22px;
+  height: 22px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.flowdesk-nav-del-cat { color: var(--color-red); }
+
+.flowdesk-nav-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.flowdesk-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--background-primary);
+  border-radius: 4px;
+  padding: 8px 10px;
+  cursor: pointer;
+  position: relative;
+  transition: box-shadow 0.1s;
+}
+
+.flowdesk-nav-link:hover {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+.nav-link-icon { font-size: 16px; }
+
+.nav-link-title {
+  font-size: 13px;
+  color: var(--text-normal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-link-del {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: var(--background-secondary);
+  border: none;
+  border-radius: 50%;
+  color: var(--color-red);
+  width: 16px;
+  height: 16px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
 }
