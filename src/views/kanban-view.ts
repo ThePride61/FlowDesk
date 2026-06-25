@@ -1,5 +1,5 @@
-import { App, ItemView, Modal, Notice, WorkspaceLeaf } from 'obsidian'
-import { Task, TaskStatus, FlowDeskSettings, NavCategory, NavLink, DEFAULT_NAV } from '../types'
+import { App, ItemView, Menu, Modal, Notice, WorkspaceLeaf } from 'obsidian'
+import { Task, TaskStatus, Priority, FlowDeskSettings, NavCategory, NavLink, DEFAULT_NAV } from '../types'
 import { TaskService } from '../services/task-service'
 
 type TabId = 'kanban' | 'nav'
@@ -151,6 +151,27 @@ export class KanbanView extends ItemView {
     }
 
     card.createDiv({ cls: 'card-date', text: task.updated })
+
+    card.oncontextmenu = (e) => {
+      e.preventDefault()
+      const menu = new Menu()
+      const priorities: { value: Priority; label: string }[] = [
+        { value: 'urgent', label: '紧急' },
+        { value: 'high', label: '高' },
+        { value: 'normal', label: '普通' },
+        { value: 'low', label: '低' },
+      ]
+      priorities.forEach(({ value, label }) => {
+        menu.addItem((item) =>
+          item
+            .setTitle(`${task.priority === value ? '✓ ' : ''}${label}`)
+            .onClick(async () => {
+              await this.taskService.updateTask(task.filePath, { priority: value })
+            })
+        )
+      })
+      menu.showAtMouseEvent(e)
+    }
 
     card.onclick = () => {
       const file = this.app.vault.getAbstractFileByPath(task.filePath)
