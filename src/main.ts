@@ -16,8 +16,22 @@ export default class FlowDeskPlugin extends Plugin {
       KanbanView.VIEW_TYPE,
       (leaf) => new KanbanView(leaf, this.taskService, this.settings)
     )
+    this.addRibbonIcon('kanban', 'FlowDesk 看板', () => this.activateKanban())
     this.addSettingTab(new FlowDeskSettingTab(this.app, this))
     registerCommands(this, this.taskService)
+  }
+
+  async activateKanban() {
+    const existing = this.app.workspace.getLeavesOfType(KanbanView.VIEW_TYPE)
+    if (existing.length) {
+      this.app.workspace.revealLeaf(existing[0])
+      return
+    }
+    const leaf = this.app.workspace.getRightLeaf(false)
+    if (leaf) {
+      await leaf.setViewState({ type: KanbanView.VIEW_TYPE, active: true })
+      this.app.workspace.revealLeaf(leaf)
+    }
   }
 
   async loadSettings() {

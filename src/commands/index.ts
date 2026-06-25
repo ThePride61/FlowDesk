@@ -13,8 +13,18 @@ export function registerCommands(plugin: Plugin, taskService: TaskService) {
   plugin.addCommand({
     id: 'list-tasks',
     name: '列出任务（打开看板）',
+    hotkeys: [{ modifiers: ['Ctrl', 'Shift'], key: 'k' }],
     callback: () => {
-      plugin.app.workspace.getLeaf().setViewState({ type: KanbanView.VIEW_TYPE, active: true })
+      const existing = plugin.app.workspace.getLeavesOfType(KanbanView.VIEW_TYPE)
+      if (existing.length) {
+        plugin.app.workspace.revealLeaf(existing[0])
+        return
+      }
+      const leaf = plugin.app.workspace.getRightLeaf(false)
+      if (leaf) {
+        leaf.setViewState({ type: KanbanView.VIEW_TYPE, active: true })
+        plugin.app.workspace.revealLeaf(leaf)
+      }
     },
   })
 
