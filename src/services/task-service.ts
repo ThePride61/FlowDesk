@@ -72,7 +72,7 @@ export class TaskService {
   }
 
   private splitFrontmatter(raw: string): { fm: Record<string, unknown>; body: string } {
-    const match = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/)
+    const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/)
     if (!match) return { fm: {}, body: raw }
     return { fm: parseYaml(match[1]) as Record<string, unknown>, body: match[2] }
   }
