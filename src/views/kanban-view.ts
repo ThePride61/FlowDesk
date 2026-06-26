@@ -328,11 +328,14 @@ export class KanbanView extends ItemView {
     })
   }
 
+  private get navPath(): string {
+    const parts = this.settings.tasksDir.split('/')
+    parts.pop()
+    return parts.concat('nav.json').join('/')
+  }
+
   private async loadNavData() {
-    const path = `${this.settings.tasksDir}/../nav.json`.replace(/[^/]+\/\.\.\//, '')
-    const navPath = this.settings.tasksDir.split('/').slice(0, -1).concat('nav.json').join('/')
-      || 'FlowDesk/nav.json'
-    const file = this.app.vault.getAbstractFileByPath('FlowDesk/nav.json')
+    const file = this.app.vault.getAbstractFileByPath(this.navPath)
     if (file) {
       try {
         const raw = await this.app.vault.read(file as any)
@@ -346,13 +349,12 @@ export class KanbanView extends ItemView {
   }
 
   private async saveNavData() {
-    const navPath = 'FlowDesk/nav.json'
     const content = JSON.stringify(this.navData, null, 2)
-    const file = this.app.vault.getAbstractFileByPath(navPath)
+    const file = this.app.vault.getAbstractFileByPath(this.navPath)
     if (file) {
       await this.app.vault.modify(file as any, content)
     } else {
-      await this.app.vault.create(navPath, content)
+      await this.app.vault.create(this.navPath, content)
     }
   }
 }
