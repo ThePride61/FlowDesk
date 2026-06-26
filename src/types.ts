@@ -10,6 +10,7 @@ export interface Task {
   related: string[]
   created: string
   updated: string
+  order: number
 }
 
 export interface FlowDeskSettings {

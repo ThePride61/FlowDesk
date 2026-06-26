@@ -125,6 +125,14 @@
 .flowdesk-card.priority-high   { border-left-color: var(--color-orange); }
 .flowdesk-card.priority-low    { border-left-color: var(--text-muted); }
 
+.flowdesk-card.card-drop-before {
+  box-shadow: 0 -2px 0 0 var(--interactive-accent);
+}
+
+.flowdesk-card.card-drop-after {
+  box-shadow: 0 2px 0 0 var(--interactive-accent);
+}
+
 .card-title {
   font-size: 14px;
   font-weight: 500;

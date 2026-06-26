@@ -21,7 +21,7 @@ export class TaskService {
     const today = this.today()
     const slug = title.toLowerCase().replace(/[^a-z0-9一-鿿]+/g, '-').slice(0, 40)
     const filePath = `${this.settings.tasksDir}/${Date.now()}-${slug}.md`
-    const fm = { title, status: '收集箱' as TaskStatus, priority, tags: [], related: [], created: today, updated: today }
+    const fm = { title, status: '收集箱' as TaskStatus, priority, tags: [], related: [], created: today, updated: today, order: 0 }
     await this.ensureDir(this.settings.tasksDir)
     await this.app.vault.create(filePath, `---\n${stringifyYaml(fm)}---\n\n## 描述\n${description}\n\n## 备注\n`)
     return { filePath, ...fm }
@@ -44,6 +44,12 @@ export class TaskService {
     await this.app.vault.delete(file)
   }
 
+  async reorderTasks(filePaths: string[]): Promise<void> {
+    for (let i = 0; i < filePaths.length; i++) {
+      await this.updateTask(filePaths[i], { order: i } as Partial<Task>)
+    }
+  }
+
   private async parseTaskFile(file: TFile): Promise<Task | null> {
     try {
       const raw = await this.app.vault.read(file)
@@ -58,6 +64,7 @@ export class TaskService {
         related: (fm.related as string[]) ?? [],
         created: (fm.created as string) ?? '',
         updated: (fm.updated as string) ?? '',
+        order: (fm.order as number) ?? 0,
       }
     } catch {
       return null

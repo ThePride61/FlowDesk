@@ -11,9 +11,14 @@ export class KanbanView extends ItemView {
   private filterTag = ''
   private filterPriority = ''
   private dragFilePath = ''
+  private dragSourceStatus = ''
   private activeTab: TabId = 'kanban'
   private navData: NavCategory[] = []
   private editMode = false
+
+  private static PRIORITY_WEIGHT: Record<Priority, number> = {
+    urgent: 0, high: 1, normal: 2, low: 3,
+  }
 
   constructor(leaf: WorkspaceLeaf, private taskService: TaskService, private settings: FlowDeskSettings) {
     super(leaf)
@@ -120,28 +125,102 @@ export class KanbanView extends ItemView {
           (!this.filterPriority || t.priority === this.filterPriority)
       )
 
+      filtered.sort((a, b) => {
+        const pw = KanbanView.PRIORITY_WEIGHT[a.priority] - KanbanView.PRIORITY_WEIGHT[b.priority]
+        if (pw !== 0) return pw
+        return a.order - b.order
+      })
+
       filtered.forEach((task) => {
         const card = this.renderCard(task)
+        card.dataset.filepath = task.filePath
         cards.appendChild(card)
       })
 
-      colEl.ondragover = (e) => { e.preventDefault(); colEl.addClass('drag-over') }
+      cards.ondragover = (e) => {
+        e.preventDefault()
+        this.clearDropIndicators(cards)
+        const target = this.getCardAtPoint(cards, e.clientY)
+        if (target) {
+          const rect = target.getBoundingClientRect()
+          const isAbove = e.clientY < rect.top + rect.height / 2
+          target.addClass(isAbove ? 'card-drop-before' : 'card-drop-after')
+        }
+        colEl.addClass('drag-over')
+      }
+
+      cards.ondragleave = (e) => {
+        if (!cards.contains(e.relatedTarget as Node)) {
+          this.clearDropIndicators(cards)
+          colEl.removeClass('drag-over')
+        }
+      }
+
+      colEl.ondragover = (e) => { e.preventDefault() }
       colEl.ondragleave = () => colEl.removeClass('drag-over')
+
       colEl.ondrop = async (e) => {
         e.preventDefault()
         colEl.removeClass('drag-over')
-        if (this.dragFilePath) {
-          await this.taskService.updateStatus(this.dragFilePath, col as TaskStatus)
-          this.dragFilePath = ''
+        this.clearDropIndicators(cards)
+        if (!this.dragFilePath) return
+
+        const targetStatus = col as TaskStatus
+        const isSameColumn = this.dragSourceStatus === targetStatus
+
+        const target = this.getCardAtPoint(cards, e.clientY)
+        const insertIdx = this.getInsertIndex(cards, target, e.clientY)
+
+        if (!isSameColumn) {
+          await this.taskService.updateStatus(this.dragFilePath, targetStatus)
         }
+
+        const ordered = this.tasks
+          .filter((t) => t.status === targetStatus && t.filePath !== this.dragFilePath)
+          .sort((a, b) => {
+            const pw = KanbanView.PRIORITY_WEIGHT[a.priority] - KanbanView.PRIORITY_WEIGHT[b.priority]
+            if (pw !== 0) return pw
+            return a.order - b.order
+          })
+
+        const paths = ordered.map((t) => t.filePath)
+        paths.splice(insertIdx, 0, this.dragFilePath)
+        await this.taskService.reorderTasks(paths)
+
+        this.dragFilePath = ''
+        this.dragSourceStatus = ''
       }
     }
+  }
+
+  private getCardAtPoint(container: HTMLElement, y: number): HTMLElement | null {
+    const cards = Array.from(container.querySelectorAll('.flowdesk-card')) as HTMLElement[]
+    for (const card of cards) {
+      const rect = card.getBoundingClientRect()
+      if (y >= rect.top && y <= rect.bottom) return card
+    }
+    return null
+  }
+
+  private getInsertIndex(container: HTMLElement, target: HTMLElement | null, y: number): number {
+    const cards = Array.from(container.querySelectorAll('.flowdesk-card')) as HTMLElement[]
+    if (!target) return cards.length
+    const idx = cards.indexOf(target)
+    const rect = target.getBoundingClientRect()
+    return y < rect.top + rect.height / 2 ? idx : idx + 1
+  }
+
+  private clearDropIndicators(container: HTMLElement) {
+    container.querySelectorAll('.card-drop-before, .card-drop-after').forEach((el) => {
+      el.removeClass('card-drop-before')
+      el.removeClass('card-drop-after')
+    })
   }
 
   private renderCard(task: Task): HTMLElement {
     const card = createDiv({ cls: `flowdesk-card priority-${task.priority}` })
     card.draggable = true
-    card.ondragstart = () => { this.dragFilePath = task.filePath }
+    card.ondragstart = () => { this.dragFilePath = task.filePath; this.dragSourceStatus = task.status }
 
     card.createDiv({ cls: 'card-title', text: task.title })
 
