@@ -234,6 +234,13 @@ export class KanbanView extends ItemView {
     card.oncontextmenu = (e) => {
       e.preventDefault()
       const menu = new Menu()
+      menu.addItem((item) =>
+        item.setTitle('复制任务名称').onClick(() => {
+          navigator.clipboard.writeText(task.title)
+          new Notice('已复制：' + task.title)
+        })
+      )
+      menu.addSeparator()
       const priorities: { value: Priority; label: string }[] = [
         { value: 'urgent', label: '紧急' },
         { value: 'high', label: '高' },
